@@ -7,18 +7,32 @@ import { User, AuthChangeEvent, Session } from '@supabase/supabase-js'
 export interface Profile {
   id: string
   user_id: string
-  user_type: 'learner' | 'instructor' | 'company'
+  user_type: 'parent' | 'student' | 'tutor'
   full_name: string
   email: string
   phone?: string
-  location?: string
+  location_subcity?: string
+  location_kebele?: string
+  location_details?: string
   bio?: string
-  skills?: string[]
-  experience_years?: number
+  subjects?: string[]
+  grade_levels?: string[]
+  session_types?: string[]
+  education_level?: string
+  university?: string
+  major?: string
+  years_experience?: number
+  teaching_certificates?: string[]
+  verification_status?: string
+  verified_at?: string
   hourly_rate?: number
   rating?: number
+  total_sessions?: number
   total_earnings?: number
-  success_rate?: number
+  response_time_hours?: number
+  available_days?: string[]
+  available_times?: Record<string, string[]>
+  children_count?: number
   created_at: string
   updated_at: string
 }
@@ -27,7 +41,7 @@ export interface AuthContextType {
   user: User | null
   profile: Profile | null
   loading: boolean
-  signUp: (email: string, password: string, userType: 'learner' | 'instructor' | 'company', fullName: string) => Promise<{ user: User | null; error: string | null }>
+  signUp: (email: string, password: string, userType: 'parent' | 'student' | 'tutor', fullName: string) => Promise<{ user: User | null; error: string | null }>
   signIn: (email: string, password: string) => Promise<{ user: User | null; error: string | null }>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<Profile>) => Promise<void>
@@ -37,7 +51,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const SUPABASE_SETUP_ERROR = `🔧 Supabase Setup Required!
 
-To use SkillBridge, you need to set up your Supabase project:
+To use Eagle Tutorials, you need to set up your Supabase project:
 
 1. Create a free Supabase project at https://supabase.com
 2. Get your project URL and API key from the dashboard
@@ -49,7 +63,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 4. Run the database schema from 'supabase-schema.sql'
 5. Restart your development server
 
-Need help? Check the README for detailed setup instructions.`
+Need help? Check the SUPABASE_SETUP.md for detailed setup instructions.`
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -122,12 +136,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const profileData = {
         id: userId,
         email: email || '',
-        user_type: (metadata?.user_type as 'learner' | 'instructor' | 'company') || 'learner',
+        user_type: (metadata?.user_type as 'parent' | 'student' | 'tutor') || 'parent',
         full_name: metadata?.full_name || '',
-        verified: false,
-        rating: null,
-        total_earnings: null,
-        success_rate: null,
+        verification_status: 'pending',
+        rating: 0,
+        total_sessions: 0,
+        total_earnings: 0,
+        response_time_hours: 24,
+        available_days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+        children_count: 0,
       }
 
       const { data, error } = await supabase
@@ -149,7 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signUp = async (email: string, password: string, userType: 'learner' | 'instructor' | 'company', fullName: string) => {
+  const signUp = async (email: string, password: string, userType: 'parent' | 'student' | 'tutor', fullName: string) => {
     if (!isSupabaseConfigured) {
       return { user: null, error: SUPABASE_SETUP_ERROR }
     }

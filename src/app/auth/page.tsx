@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { AlertCircle, Loader2, GraduationCap, Users, Building } from 'lucide-react'
+import { AlertCircle, Loader2, Heart, GraduationCap, BookOpen } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -16,7 +16,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
-  const [userType, setUserType] = useState<'learner' | 'instructor' | 'company'>('learner')
+  const [userType, setUserType] = useState<'parent' | 'student' | 'tutor'>('parent')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -81,12 +81,38 @@ export default function AuthPage() {
     setLoading(false)
   }
 
+  const userTypeDescriptions = {
+    parent: {
+      icon: Heart,
+      title: 'Find Tutors for My Child',
+      description: 'Search for qualified tutors, book sessions, and track your child\'s progress',
+      benefits: ['Browse verified tutors', 'Book home or online sessions', 'Track learning progress', 'Secure payments']
+    },
+    student: {
+      icon: GraduationCap,
+      title: 'Learn with Expert Tutors',
+      description: 'Find tutors for your subjects and excel in your studies',
+      benefits: ['Get personalized learning', 'Improve your grades', 'Flexible scheduling', 'Build confidence']
+    },
+    tutor: {
+      icon: BookOpen,
+      title: 'Teach & Earn',
+      description: 'Share your expertise, help students succeed, and earn money',
+      benefits: ['Flexible schedule', 'Competitive earnings', 'Verified students', 'Build reputation']
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to SkillBridge</h1>
-          <p className="text-gray-600">Your gateway to learning and teaching skills</p>
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-amber-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">🦅</span>
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Eagle Tutorials</h1>
+          <p className="text-gray-600">Connecting students with expert tutors across Addis Ababa</p>
         </div>
 
         <Tabs defaultValue="signin" className="w-full">
@@ -98,9 +124,9 @@ export default function AuthPage() {
           <TabsContent value="signin">
             <Card>
               <CardHeader>
-                <CardTitle>Sign In</CardTitle>
+                <CardTitle>Welcome Back</CardTitle>
                 <CardDescription>
-                  Enter your credentials to access your account
+                  Sign in to access your Eagle Tutorials account
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -127,7 +153,7 @@ export default function AuthPage() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -145,84 +171,116 @@ export default function AuthPage() {
           <TabsContent value="signup">
             <Card>
               <CardHeader>
-                <CardTitle>Create Account</CardTitle>
+                <CardTitle>Join Eagle Tutorials</CardTitle>
                 <CardDescription>
-                  Choose your role and create your account
+                  Choose your role and start your tutoring journey
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="user-type">I want to</Label>
-                    <Select value={userType} onValueChange={(value: 'learner' | 'instructor' | 'company') => setUserType(value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="learner">
-                          <div className="flex items-center">
-                            <GraduationCap className="mr-2 h-4 w-4" />
-                            Learn New Skills
+                <form onSubmit={handleSignUp} className="space-y-6">
+                  {/* User Type Selection */}
+                  <div className="space-y-4">
+                    <Label className="text-base font-medium">I am a...</Label>
+                    <div className="grid grid-cols-1 gap-4">
+                      {Object.entries(userTypeDescriptions).map(([type, config]) => {
+                        const IconComponent = config.icon
+                        return (
+                          <div
+                            key={type}
+                            className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                              userType === type 
+                                ? 'border-blue-500 bg-blue-50 shadow-md' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                            onClick={() => setUserType(type as 'parent' | 'student' | 'tutor')}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className={`p-2 rounded-lg ${userType === type ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                                <IconComponent className={`h-5 w-5 ${userType === type ? 'text-blue-600' : 'text-gray-600'}`} />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className={`font-medium ${userType === type ? 'text-blue-900' : 'text-gray-900'}`}>
+                                  {config.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 mt-1">{config.description}</p>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {config.benefits.slice(0, 2).map((benefit, idx) => (
+                                    <span 
+                                      key={idx} 
+                                      className={`text-xs px-2 py-1 rounded-full ${
+                                        userType === type 
+                                          ? 'bg-blue-100 text-blue-700' 
+                                          : 'bg-gray-100 text-gray-600'
+                                      }`}
+                                    >
+                                      {benefit}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        </SelectItem>
-                        <SelectItem value="instructor">
-                          <div className="flex items-center">
-                            <Users className="mr-2 h-4 w-4" />
-                            Teach & Earn
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="company">
-                          <div className="flex items-center">
-                            <Building className="mr-2 h-4 w-4" />
-                            Train Employees
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                        )
+                      })}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="full-name">Full Name</Label>
-                    <Input
-                      id="full-name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                    />
+
+                  {/* Form Fields */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="full-name">Full Name</Label>
+                      <Input
+                        id="full-name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <Input
+                        id="signup-password"
+                        type="password"
+                        placeholder="Create a password (min 6 characters)"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="Create a password (min 6 characters)"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+
+                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Creating account...
                       </>
                     ) : (
-                      'Create Account'
+                      `Get Started as ${userTypeDescriptions[userType].title.split(' ')[0]}`
                     )}
                   </Button>
+
+                  <div className="text-center text-sm text-gray-500">
+                    By creating an account, you agree to our terms of service and privacy policy.
+                    {userType === 'tutor' && (
+                      <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-amber-800">
+                        <strong>Note:</strong> Tutor accounts require verification before you can accept students.
+                      </div>
+                    )}
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -242,6 +300,13 @@ export default function AuthPage() {
             <AlertDescription className="text-green-800">{success}</AlertDescription>
           </Alert>
         )}
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+            Made with ❤️ for Ethiopian education • 
+                         <Link href="/" className="text-blue-600 hover:underline ml-1">Back to home</Link>
+          </p>
+        </div>
       </div>
     </div>
   )

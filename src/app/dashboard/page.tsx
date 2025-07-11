@@ -7,23 +7,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/contexts/AuthContext'
-import { User, GraduationCap, Building, PlusCircle, MessageSquare, TrendingUp, Users, Star, DollarSign, Award, BookOpen, Target } from 'lucide-react'
+import { Heart, GraduationCap, BookOpen, PlusCircle, MessageSquare, TrendingUp, Users, Star, DollarSign, Award, UserPlus, School } from 'lucide-react'
 
-interface SkillRequest {
+interface TutorRequest {
   id: string
   title: string
   description: string
-  skill_category: string
-  budget_min: number
-  budget_max: number
+  subject: string
+  grade_level: string
+  budget_per_session: number
   created_at: string
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled'
+  status: 'open' | 'matched' | 'in_progress' | 'completed' | 'cancelled'
 }
 
 export default function Dashboard() {
   const router = useRouter()
   const { user, profile, loading, signOut } = useAuth()
-  const [skillRequests] = useState<SkillRequest[]>([])
+  const [tutorRequests] = useState<TutorRequest[]>([])
   const [statsLoading, setStatsLoading] = useState(true)
 
   useEffect(() => {
@@ -68,60 +68,60 @@ export default function Dashboard() {
   }
 
   const userTypeConfig = {
-    learner: {
-      icon: User,
+    parent: {
+      icon: Heart,
       color: 'bg-blue-100 text-blue-800',
       actions: [
-        { label: 'Post a Skill Request', action: () => router.push('/post-skill-request'), icon: PlusCircle },
-        { label: 'Browse Instructors', action: () => router.push('/browse-instructors'), icon: Users },
-        { label: 'My Learning Progress', action: () => router.push('/my-progress'), icon: TrendingUp },
+        { label: 'Manage My Children', action: () => router.push('/dashboard/children'), icon: UserPlus },
+        { label: 'Find a Tutor', action: () => router.push('/post-skill-request'), icon: PlusCircle },
+        { label: 'Browse Tutors', action: () => router.push('/browse-tutors'), icon: Users },
         { label: 'Messages', action: () => router.push('/messages'), icon: MessageSquare },
       ]
     },
-    instructor: {
+    student: {
       icon: GraduationCap,
       color: 'bg-green-100 text-green-800',
       actions: [
-        { label: 'Browse Skill Requests', action: () => router.push('/browse-requests'), icon: BookOpen },
-        { label: 'My Proposals', action: () => router.push('/my-proposals'), icon: Target },
-        { label: 'Teaching Analytics', action: () => router.push('/analytics'), icon: TrendingUp },
+        { label: 'Find a Tutor', action: () => router.push('/post-skill-request'), icon: PlusCircle },
+        { label: 'My Sessions', action: () => router.push('/my-sessions'), icon: BookOpen },
+        { label: 'My Progress', action: () => router.push('/my-progress'), icon: TrendingUp },
         { label: 'Messages', action: () => router.push('/messages'), icon: MessageSquare },
       ]
     },
-    company: {
-      icon: Building,
-      color: 'bg-purple-100 text-purple-800',
+    tutor: {
+      icon: BookOpen,
+      color: 'bg-amber-100 text-amber-800',
       actions: [
-        { label: 'Manage Training Programs', action: () => router.push('/training-programs'), icon: BookOpen },
-        { label: 'Find Instructors', action: () => router.push('/find-instructors'), icon: Users },
-        { label: 'Employee Progress', action: () => router.push('/employee-progress'), icon: TrendingUp },
+        { label: 'Browse Requests', action: () => router.push('/browse-requests'), icon: School },
+        { label: 'My Students', action: () => router.push('/my-students'), icon: Users },
+        { label: 'Earnings & Analytics', action: () => router.push('/analytics'), icon: DollarSign },
         { label: 'Messages', action: () => router.push('/messages'), icon: MessageSquare },
       ]
     }
   }
 
-  const config = userTypeConfig[profile.user_type]
-  const IconComponent = config.icon
+  const config = userTypeConfig[profile.user_type as keyof typeof userTypeConfig]
+  const IconComponent = config?.icon || Heart
 
   // Mock stats for demonstration
   const stats = {
-    learner: [
-      { label: 'Active Requests', value: skillRequests.length, icon: BookOpen },
-      { label: 'Completed Skills', value: 3, icon: Award },
-      { label: 'Hours Learned', value: 24, icon: TrendingUp },
-      { label: 'Instructors Worked With', value: 2, icon: Users },
+    parent: [
+      { label: 'Children Registered', value: 2, icon: UserPlus },
+      { label: 'Active Sessions', value: 3, icon: BookOpen },
+      { label: 'This Month Spent', value: '2,400 ETB', icon: DollarSign },
+      { label: 'Tutors Worked With', value: 2, icon: Users },
     ],
-    instructor: [
-      { label: 'Active Students', value: 12, icon: Users },
-      { label: 'Total Earnings', value: `${profile.total_earnings || 0} ETB`, icon: DollarSign },
-      { label: 'Success Rate', value: `${profile.success_rate || 0}%`, icon: TrendingUp },
-      { label: 'Rating', value: `${profile.rating || 0}/5`, icon: Star },
+    student: [
+      { label: 'Active Sessions', value: tutorRequests.length, icon: BookOpen },
+      { label: 'Subjects Learning', value: 3, icon: Award },
+      { label: 'Hours This Month', value: 16, icon: TrendingUp },
+      { label: 'Tutors', value: 2, icon: Users },
     ],
-    company: [
-      { label: 'Active Programs', value: 5, icon: BookOpen },
-      { label: 'Employees Trained', value: 45, icon: Users },
-      { label: 'Training Hours', value: 320, icon: TrendingUp },
-      { label: 'Success Rate', value: '87%', icon: Award },
+    tutor: [
+      { label: 'Active Students', value: 8, icon: Users },
+      { label: 'This Month Earnings', value: `${profile.total_earnings || 0} ETB`, icon: DollarSign },
+      { label: 'Rating', value: `${profile.rating || 4.8}/5`, icon: Star },
+      { label: 'Sessions This Month', value: 24, icon: BookOpen },
     ]
   }
 
@@ -133,13 +133,13 @@ export default function Dashboard() {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">SB</span>
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-amber-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">🦅</span>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">SkillBridge</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Eagle Tutorials</h1>
               </div>
               <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                Phase 1: Academic Tutoring
+                Addis Ababa
               </Badge>
             </div>
             <div className="flex items-center space-x-4">
@@ -159,13 +159,13 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 text-white">
             <h2 className="text-2xl font-bold mb-2">
-              🎉 Welcome to SkillBridge!
+              🎉 Welcome to Eagle Tutorials!
             </h2>
-                         <p className="text-blue-100 mb-4">
-               You&apos;re logged in as a <span className="font-medium capitalize">{profile.user_type}</span>
-             </p>
+            <p className="text-blue-100 mb-4">
+              You&apos;re logged in as a <span className="font-medium capitalize">{profile.user_type}</span>
+            </p>
             <div className="flex items-center space-x-2 text-sm">
               <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
                 <IconComponent className="w-3 h-3 mr-1" />
@@ -173,7 +173,9 @@ export default function Dashboard() {
               </div>
               <span className="text-blue-200">•</span>
               <span className="text-blue-200">
-                Welcome to SkillBridge! 🚀 Start your skills-to-income journey today.
+                {profile.user_type === 'parent' && "Find the perfect tutor for your child&apos;s educational journey! 📚"}
+                {profile.user_type === 'student' && "Start learning with expert tutors today! 🎓"}
+                {profile.user_type === 'tutor' && "Share your expertise and earn while teaching! 🦅"}
               </span>
             </div>
           </div>
@@ -211,7 +213,9 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
                 <CardDescription>
-                  Get started with these common tasks
+                  {profile.user_type === 'parent' && "Manage your children and find the best tutors"}
+                  {profile.user_type === 'student' && "Get started with these common tasks"}
+                  {profile.user_type === 'tutor' && "Manage your teaching and connect with students"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -220,16 +224,50 @@ export default function Dashboard() {
                     <Button
                       key={index}
                       variant="outline"
-                      className="h-auto p-4 justify-start"
+                      className="h-auto p-4 justify-start hover:bg-blue-50"
                       onClick={action.action}
                     >
-                      <action.icon className="h-5 w-5 mr-3" />
+                      <action.icon className="h-5 w-5 mr-3 text-blue-600" />
                       <span className="text-left">{action.label}</span>
                     </Button>
                   ))}
                 </div>
               </CardContent>
             </Card>
+
+            {/* Parent-specific Recent Activity */}
+            {profile.user_type === 'parent' && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Recent Activity</CardTitle>
+                  <CardDescription>
+                    Latest updates on your children's tutoring sessions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
+                      <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <BookOpen className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Mathematics session completed</p>
+                        <p className="text-xs text-gray-500">Meron had a great session with Tutor Sarah - 2 hours ago</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg">
+                      <div className="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <Star className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">New tutor proposal received</p>
+                        <p className="text-xs text-gray-500">Physics tutor interested in teaching Meron - 1 day ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Profile Summary */}
@@ -240,49 +278,85 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
                     <IconComponent className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="font-semibold text-lg">{profile.full_name}</h3>
                   <p className="text-sm text-gray-600 capitalize">{profile.user_type}</p>
+                  {profile.user_type === 'tutor' && profile.verification_status && (
+                    <Badge 
+                      variant={profile.verification_status === 'verified' ? 'default' : 'secondary'}
+                      className="mt-2"
+                    >
+                      {profile.verification_status === 'verified' ? '✓ Verified Tutor' : 'Pending Verification'}
+                    </Badge>
+                  )}
                 </div>
                 
                 <Separator />
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
                     <span className="text-gray-600">Email:</span>
                     <span className="font-medium">{profile.email}</span>
                   </div>
-                  
-                  {profile.location && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Location:</span>
-                      <span className="font-medium">{profile.location}</span>
+                  {profile.user_type === 'parent' && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Children:</span>
+                      <span className="font-medium">{profile.children_count || 0}</span>
                     </div>
                   )}
-                  
-                  {profile.user_type === 'instructor' && profile.hourly_rate && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Hourly Rate:</span>
-                      <span className="font-medium">{profile.hourly_rate} ETB</span>
-                    </div>
-                  )}
-                  
-                  {profile.user_type === 'instructor' && profile.rating && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Rating:</span>
-                      <span className="font-medium flex items-center">
-                        {profile.rating}/5
-                        <Star className="h-3 w-3 text-yellow-400 ml-1" />
-                      </span>
-                    </div>
+                  {profile.user_type === 'tutor' && (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Rating:</span>
+                        <span className="font-medium">{profile.rating || 0}/5 ⭐</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Sessions:</span>
+                        <span className="font-medium">{profile.total_sessions || 0}</span>
+                      </div>
+                    </>
                   )}
                 </div>
-                
-                <Button variant="outline" className="w-full">
+
+                <Separator />
+
+                <Button variant="outline" size="sm" className="w-full">
                   Edit Profile
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* Quick Tips */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="text-sm">💡 Quick Tips</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-xs text-gray-600">
+                  {profile.user_type === 'parent' && (
+                    <>
+                      <p>• Add your children's profiles for better tutor matching</p>
+                      <p>• Check tutor reviews before booking sessions</p>
+                      <p>• Set clear learning goals for each subject</p>
+                    </>
+                  )}
+                  {profile.user_type === 'student' && (
+                    <>
+                      <p>• Be specific about what you want to learn</p>
+                      <p>• Prepare questions before each session</p>
+                      <p>• Practice regularly between sessions</p>
+                    </>
+                  )}
+                  {profile.user_type === 'tutor' && (
+                    <>
+                      <p>• Complete your profile verification</p>
+                      <p>• Respond to requests within 24 hours</p>
+                      <p>• Upload teaching certificates</p>
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
