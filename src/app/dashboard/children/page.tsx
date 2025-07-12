@@ -1,56 +1,122 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { AlertCircle, ArrowLeft, Plus, User, BookOpen, School, Edit, Trash2, GraduationCap } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  AlertCircle,
+  ArrowLeft,
+  Plus,
+  BookOpen,
+  School,
+  Edit,
+  Trash2,
+  GraduationCap,
+} from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const gradeOptions = [
-  'Pre-K', 'Kindergarten', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6',
-  'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'
-]
+  'Pre-K',
+  'Kindergarten',
+  'Grade 1',
+  'Grade 2',
+  'Grade 3',
+  'Grade 4',
+  'Grade 5',
+  'Grade 6',
+  'Grade 7',
+  'Grade 8',
+  'Grade 9',
+  'Grade 10',
+  'Grade 11',
+  'Grade 12',
+];
 
 const ethiopianSubjects = [
-  'Mathematics', 'English', 'Amharic', 'Physics', 'Chemistry', 'Biology',
-  'History', 'Geography', 'Civics', 'Computer Science', 'Art', 'Physical Education'
-]
+  'Mathematics',
+  'English',
+  'Amharic',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'History',
+  'Geography',
+  'Civics',
+  'Computer Science',
+  'Art',
+  'Physical Education',
+];
 
 const learningStyles = [
-  { value: 'visual', label: 'Visual Learner', description: 'Learns best through seeing and visual aids' },
-  { value: 'auditory', label: 'Auditory Learner', description: 'Learns best through hearing and discussion' },
-  { value: 'kinesthetic', label: 'Kinesthetic Learner', description: 'Learns best through hands-on activities' },
-  { value: 'mixed', label: 'Mixed Learning Style', description: 'Benefits from multiple learning approaches' }
-]
+  {
+    value: 'visual',
+    label: 'Visual Learner',
+    description: 'Learns best through seeing and visual aids',
+  },
+  {
+    value: 'auditory',
+    label: 'Auditory Learner',
+    description: 'Learns best through hearing and discussion',
+  },
+  {
+    value: 'kinesthetic',
+    label: 'Kinesthetic Learner',
+    description: 'Learns best through hands-on activities',
+  },
+  {
+    value: 'mixed',
+    label: 'Mixed Learning Style',
+    description: 'Benefits from multiple learning approaches',
+  },
+];
 
 interface Child {
-  id: string
-  name: string
-  age: number
-  grade_level: string
-  school_name: string
-  subjects_struggling: string[]
-  learning_style: string
-  special_needs: string
-  created_at: string
+  id: string;
+  name: string;
+  age: number;
+  grade_level: string;
+  school_name: string;
+  subjects_struggling: string[];
+  learning_style: string;
+  special_needs: string;
+  created_at: string;
 }
 
 export default function ChildrenManagement() {
-  const { user, profile, loading } = useAuth()
-  const router = useRouter()
-  const [children, setChildren] = useState<Child[]>([])
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editingChild, setEditingChild] = useState<Child | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState('')
+  const { user, profile, loading } = useAuth();
+  const router = useRouter();
+  const [children, setChildren] = useState<Child[]>([]);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingChild, setEditingChild] = useState<Child | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -58,16 +124,16 @@ export default function ChildrenManagement() {
     school_name: '',
     subjects_struggling: [] as string[],
     learning_style: '',
-    special_needs: ''
-  })
+    special_needs: '',
+  });
 
   useEffect(() => {
     if (!loading && (!user || profile?.user_type !== 'parent')) {
-      router.push('/auth')
+      router.push('/auth');
     }
     // TODO: Load children from Supabase
-    loadChildren()
-  }, [user, profile, loading, router])
+    loadChildren();
+  }, [user, profile, loading, router]);
 
   const loadChildren = async () => {
     // TODO: Implement Supabase query
@@ -82,28 +148,28 @@ export default function ChildrenManagement() {
         subjects_struggling: ['Mathematics', 'Physics'],
         learning_style: 'visual',
         special_needs: '',
-        created_at: '2024-01-15'
-      }
-    ])
-  }
+        created_at: '2024-01-15',
+      },
+    ]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setError('')
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
 
     try {
       if (!formData.name || !formData.age || !formData.grade_level) {
-        throw new Error('Please fill in all required fields')
+        throw new Error('Please fill in all required fields');
       }
 
       if (parseInt(formData.age) < 3 || parseInt(formData.age) > 25) {
-        throw new Error('Age must be between 3 and 25')
+        throw new Error('Age must be between 3 and 25');
       }
 
       // TODO: Submit to Supabase
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       // Simulate adding the child
       const newChild: Child = {
         id: Date.now().toString(),
@@ -114,27 +180,30 @@ export default function ChildrenManagement() {
         subjects_struggling: formData.subjects_struggling,
         learning_style: formData.learning_style,
         special_needs: formData.special_needs,
-        created_at: new Date().toISOString()
-      }
+        created_at: new Date().toISOString(),
+      };
 
       if (editingChild) {
-        setChildren(prev => prev.map(child => 
-          child.id === editingChild.id ? { ...newChild, id: editingChild.id } : child
-        ))
-        setEditingChild(null)
+        setChildren(prev =>
+          prev.map(child =>
+            child.id === editingChild.id
+              ? { ...newChild, id: editingChild.id }
+              : child
+          )
+        );
+        setEditingChild(null);
       } else {
-        setChildren(prev => [...prev, newChild])
+        setChildren(prev => [...prev, newChild]);
       }
 
-      resetForm()
-      setIsAddDialogOpen(false)
-
+      resetForm();
+      setIsAddDialogOpen(false);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -144,10 +213,10 @@ export default function ChildrenManagement() {
       school_name: '',
       subjects_struggling: [],
       learning_style: '',
-      special_needs: ''
-    })
-    setError('')
-  }
+      special_needs: '',
+    });
+    setError('');
+  };
 
   const handleEdit = (child: Child) => {
     setFormData({
@@ -157,52 +226,54 @@ export default function ChildrenManagement() {
       school_name: child.school_name,
       subjects_struggling: child.subjects_struggling,
       learning_style: child.learning_style,
-      special_needs: child.special_needs
-    })
-    setEditingChild(child)
-    setIsAddDialogOpen(true)
-  }
+      special_needs: child.special_needs,
+    });
+    setEditingChild(child);
+    setIsAddDialogOpen(true);
+  };
 
   const handleDelete = async (childId: string) => {
-    if (confirm('Are you sure you want to remove this child from your account?')) {
+    if (
+      confirm('Are you sure you want to remove this child from your account?')
+    ) {
       // TODO: Delete from Supabase
-      setChildren(prev => prev.filter(child => child.id !== childId))
+      setChildren(prev => prev.filter(child => child.id !== childId));
     }
-  }
+  };
 
   const addSubject = (subject: string) => {
     if (!formData.subjects_struggling.includes(subject)) {
       setFormData(prev => ({
         ...prev,
-        subjects_struggling: [...prev.subjects_struggling, subject]
-      }))
+        subjects_struggling: [...prev.subjects_struggling, subject],
+      }));
     }
-  }
+  };
 
   const removeSubject = (subject: string) => {
     setFormData(prev => ({
       ...prev,
-      subjects_struggling: prev.subjects_struggling.filter(s => s !== subject)
-    }))
-  }
+      subjects_struggling: prev.subjects_struggling.filter(s => s !== subject),
+    }));
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600" />
       </div>
-    )
+    );
   }
 
   if (!user || !profile || profile.user_type !== 'parent') {
-    return null
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
               <Button
@@ -213,40 +284,51 @@ export default function ChildrenManagement() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">My Children</h1>
-                <p className="text-sm text-gray-500">Manage your children's profiles and tutoring needs</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  My Children
+                </h1>
+                <p className="text-sm text-gray-500">
+                  Manage your children's profiles and tutoring needs
+                </p>
               </div>
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700" onClick={resetForm}>
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={resetForm}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
                   Add Child
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {editingChild ? 'Edit Child Profile' : 'Add New Child'}
                   </DialogTitle>
                   <DialogDescription>
-                    {editingChild 
-                      ? 'Update your child\'s information and learning preferences.'
-                      : 'Add your child\'s information to help us find the perfect tutor.'
-                    }
+                    {editingChild
+                      ? "Update your child's information and learning preferences."
+                      : "Add your child's information to help us find the perfect tutor."}
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Basic Information */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="name">Child's Full Name *</Label>
                       <Input
                         id="name"
                         placeholder="e.g., Meron Tadesse"
                         value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={e =>
+                          setFormData(prev => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         required
                       />
                     </div>
@@ -257,7 +339,12 @@ export default function ChildrenManagement() {
                         type="number"
                         placeholder="e.g., 15"
                         value={formData.age}
-                        onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
+                        onChange={e =>
+                          setFormData(prev => ({
+                            ...prev,
+                            age: e.target.value,
+                          }))
+                        }
                         min="3"
                         max="25"
                         required
@@ -265,15 +352,20 @@ export default function ChildrenManagement() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="grade">Grade Level *</Label>
-                      <Select value={formData.grade_level} onValueChange={(value) => setFormData(prev => ({ ...prev, grade_level: value }))}>
+                      <Select
+                        value={formData.grade_level}
+                        onValueChange={value =>
+                          setFormData(prev => ({ ...prev, grade_level: value }))
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select grade level" />
                         </SelectTrigger>
                         <SelectContent>
-                          {gradeOptions.map((grade) => (
+                          {gradeOptions.map(grade => (
                             <SelectItem key={grade} value={grade}>
                               {grade}
                             </SelectItem>
@@ -287,7 +379,12 @@ export default function ChildrenManagement() {
                         id="school"
                         placeholder="e.g., Addis Ababa Preparatory School"
                         value={formData.school_name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, school_name: e.target.value }))}
+                        onChange={e =>
+                          setFormData(prev => ({
+                            ...prev,
+                            school_name: e.target.value,
+                          }))
+                        }
                       />
                     </div>
                   </div>
@@ -295,16 +392,20 @@ export default function ChildrenManagement() {
                   {/* Subjects Struggling With */}
                   <div className="space-y-3">
                     <Label>Subjects that need help with</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {ethiopianSubjects.map((subject) => (
+                    <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                      {ethiopianSubjects.map(subject => (
                         <Button
                           key={subject}
                           type="button"
-                          variant={formData.subjects_struggling.includes(subject) ? "default" : "outline"}
+                          variant={
+                            formData.subjects_struggling.includes(subject)
+                              ? 'default'
+                              : 'outline'
+                          }
                           size="sm"
-                          onClick={() => 
-                            formData.subjects_struggling.includes(subject) 
-                              ? removeSubject(subject) 
+                          onClick={() =>
+                            formData.subjects_struggling.includes(subject)
+                              ? removeSubject(subject)
                               : addSubject(subject)
                           }
                           className="justify-start"
@@ -315,8 +416,13 @@ export default function ChildrenManagement() {
                     </div>
                     {formData.subjects_struggling.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        {formData.subjects_struggling.map((subject) => (
-                          <Badge key={subject} variant="secondary" className="cursor-pointer" onClick={() => removeSubject(subject)}>
+                        {formData.subjects_struggling.map(subject => (
+                          <Badge
+                            key={subject}
+                            variant="secondary"
+                            className="cursor-pointer"
+                            onClick={() => removeSubject(subject)}
+                          >
                             {subject} ×
                           </Badge>
                         ))}
@@ -328,18 +434,25 @@ export default function ChildrenManagement() {
                   <div className="space-y-3">
                     <Label>Learning Style</Label>
                     <div className="grid grid-cols-1 gap-3">
-                      {learningStyles.map((style) => (
+                      {learningStyles.map(style => (
                         <div
                           key={style.value}
-                          className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                          className={`cursor-pointer rounded-lg border p-3 transition-colors ${
                             formData.learning_style === style.value
                               ? 'border-blue-500 bg-blue-50'
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
-                          onClick={() => setFormData(prev => ({ ...prev, learning_style: style.value }))}
+                          onClick={() =>
+                            setFormData(prev => ({
+                              ...prev,
+                              learning_style: style.value,
+                            }))
+                          }
                         >
                           <div className="font-medium">{style.label}</div>
-                          <div className="text-sm text-gray-600">{style.description}</div>
+                          <div className="text-sm text-gray-600">
+                            {style.description}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -347,12 +460,19 @@ export default function ChildrenManagement() {
 
                   {/* Special Needs */}
                   <div className="space-y-2">
-                    <Label htmlFor="special-needs">Special Requirements or Learning Needs</Label>
+                    <Label htmlFor="special-needs">
+                      Special Requirements or Learning Needs
+                    </Label>
                     <Textarea
                       id="special-needs"
                       placeholder="Any special requirements, learning difficulties, or notes for tutors..."
                       value={formData.special_needs}
-                      onChange={(e) => setFormData(prev => ({ ...prev, special_needs: e.target.value }))}
+                      onChange={e =>
+                        setFormData(prev => ({
+                          ...prev,
+                          special_needs: e.target.value,
+                        }))
+                      }
                       rows={3}
                     />
                   </div>
@@ -365,25 +485,31 @@ export default function ChildrenManagement() {
                   )}
 
                   <div className="flex justify-end space-x-3">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={() => {
-                        setIsAddDialogOpen(false)
-                        setEditingChild(null)
-                        resetForm()
+                        setIsAddDialogOpen(false);
+                        setEditingChild(null);
+                        resetForm();
                       }}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
                       {isSubmitting ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
                           {editingChild ? 'Updating...' : 'Adding...'}
                         </>
+                      ) : editingChild ? (
+                        'Update Child'
                       ) : (
-                        editingChild ? 'Update Child' : 'Add Child'
+                        'Add Child'
                       )}
                     </Button>
                   </div>
@@ -395,23 +521,34 @@ export default function ChildrenManagement() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {children.length === 0 ? (
-          <Card className="text-center py-12">
+          <Card className="py-12 text-center">
             <CardContent>
-              <GraduationCap className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No children added yet</h3>
-              <p className="text-gray-600 mb-6">Add your children's profiles to start finding them the perfect tutors.</p>
-              <Button onClick={() => setIsAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />
+              <GraduationCap className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+              <h3 className="mb-2 text-lg font-medium text-gray-900">
+                No children added yet
+              </h3>
+              <p className="mb-6 text-gray-600">
+                Add your children's profiles to start finding them the perfect
+                tutors.
+              </p>
+              <Button
+                onClick={() => setIsAddDialogOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="mr-2 h-4 w-4" />
                 Add Your First Child
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {children.map((child) => (
-              <Card key={child.id} className="hover:shadow-md transition-shadow">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {children.map(child => (
+              <Card
+                key={child.id}
+                className="transition-shadow hover:shadow-md"
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -421,10 +558,18 @@ export default function ChildrenManagement() {
                       </CardDescription>
                     </div>
                     <div className="flex space-x-1">
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(child)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(child)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(child.id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(child.id)}
+                      >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
@@ -437,13 +582,19 @@ export default function ChildrenManagement() {
                       <span>{child.school_name}</span>
                     </div>
                   )}
-                  
+
                   {child.subjects_struggling.length > 0 && (
                     <div>
-                      <div className="text-sm font-medium text-gray-700 mb-2">Needs help with:</div>
+                      <div className="mb-2 text-sm font-medium text-gray-700">
+                        Needs help with:
+                      </div>
                       <div className="flex flex-wrap gap-1">
-                        {child.subjects_struggling.map((subject) => (
-                          <Badge key={subject} variant="secondary" className="text-xs">
+                        {child.subjects_struggling.map(subject => (
+                          <Badge
+                            key={subject}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {subject}
                           </Badge>
                         ))}
@@ -453,18 +604,24 @@ export default function ChildrenManagement() {
 
                   {child.learning_style && (
                     <div className="text-sm">
-                      <span className="font-medium text-gray-700">Learning Style: </span>
-                      <span className="capitalize">{child.learning_style} learner</span>
+                      <span className="font-medium text-gray-700">
+                        Learning Style:{' '}
+                      </span>
+                      <span className="capitalize">
+                        {child.learning_style} learner
+                      </span>
                     </div>
                   )}
 
-                  <div className="pt-4 border-t">
-                    <Button 
-                      size="sm" 
+                  <div className="border-t pt-4">
+                    <Button
+                      size="sm"
                       className="w-full bg-blue-600 hover:bg-blue-700"
-                      onClick={() => router.push(`/post-skill-request?child=${child.id}`)}
+                      onClick={() =>
+                        router.push(`/post-skill-request?child=${child.id}`)
+                      }
                     >
-                      <BookOpen className="h-4 w-4 mr-2" />
+                      <BookOpen className="mr-2 h-4 w-4" />
                       Find Tutor
                     </Button>
                   </div>
@@ -475,5 +632,5 @@ export default function ChildrenManagement() {
         )}
       </div>
     </div>
-  )
-} 
+  );
+}
