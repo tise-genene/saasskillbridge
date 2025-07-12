@@ -37,7 +37,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto text-center">
           <div className="mb-8">
             <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-200">
-              🎓 Transforming Education in Addis Ababa
+              🎓 Transforming Education in Ethiopia
             </Badge>
             <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
               Find the Perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-amber-500">Tutor</span> in Minutes
@@ -59,7 +59,7 @@ export default function LandingPage() {
               </Link>
             </div>
             <p className="text-sm text-slate-500">
-              Join 500+ families and tutors already using Eagle Tutorials in Addis Ababa
+              Join 500+ families and tutors already using Our Platform in Ethiopia
             </p>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function LandingPage() {
               Say Goodbye to Telegram Tutor Hunting
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              We're solving the massive inefficiency in how parents find quality tutors in Addis Ababa.
+              We&apos;re solving the massive inefficiency in how parents find quality tutors in Addis Ababa.
             </p>
           </div>
           
@@ -163,11 +163,11 @@ export default function LandingPage() {
               <CardHeader>
                 <Clock className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                 <CardTitle className="text-blue-900">Flexible Scheduling</CardTitle>
-                <CardDescription>Book sessions that fit your family's schedule with real-time availability</CardDescription>
+                <CardDescription>Book sessions that fit your family&apos;s schedule with real-time availability</CardDescription>
               </CardHeader>
             </Card>
           </div>
-        </div>
+        </div>  
       </section>
 
       {/* How It Works */}
@@ -237,7 +237,7 @@ export default function LandingPage() {
                   <div className="flex text-yellow-400">★★★★★</div>
                 </div>
                 <p className="text-slate-600 italic mb-4">
-                  "Finding a reliable math tutor for my daughter used to take weeks. With Eagle Tutorials, I found the perfect match in just one day!"
+                  &quot;Finding a reliable math tutor for my daughter used to take weeks. With Eagle Tutorials, I found the perfect match in just one day!&quot;
                 </p>
                 <p className="font-semibold text-slate-900">- Almaz T., Parent</p>
                 <p className="text-sm text-slate-500">Bole, Addis Ababa</p>
@@ -250,7 +250,7 @@ export default function LandingPage() {
                   <div className="flex text-yellow-400">★★★★★</div>
                 </div>
                 <p className="text-slate-600 italic mb-4">
-                  "The platform makes it so easy to manage my students and schedule. I can focus on teaching instead of administration."
+                  &quot;The platform makes it so easy to manage my students and schedule. I can focus on teaching instead of administration."
                 </p>
                 <p className="font-semibold text-slate-900">- Fikir M., Chemistry Tutor</p>
                 <p className="text-sm text-slate-500">Addis Ababa University Graduate</p>
@@ -263,7 +263,7 @@ export default function LandingPage() {
                   <div className="flex text-yellow-400">★★★★★</div>
                 </div>
                 <p className="text-slate-600 italic mb-4">
-                  "My son's English grades improved dramatically after just 6 sessions. The tutor was professional and really understood his needs."
+                  &quot;My son&apos;s English grades improved dramatically after just 6 sessions. The tutor was professional and really understood his needs."
                 </p>
                 <p className="font-semibold text-slate-900">- Sarah G., Parent</p>
                 <p className="text-sm text-slate-500">Kazanchis, Addis Ababa</p>
@@ -277,7 +277,7 @@ export default function LandingPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Find Your Child's Perfect Tutor?
+            Ready to Find Your Child&apos;s Perfect Tutor?
           </h2>
           <p className="text-xl mb-8 text-blue-100">
             Join hundreds of families in Addis Ababa who have found quality education through Eagle Tutorials.
